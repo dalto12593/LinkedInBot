@@ -91,7 +91,7 @@ def StartBrowser(browserChoice):
     passElement.submit()
 
     print('Signing in...')
-    time.sleep(3)
+    time.sleep(9)
 
     soup = BeautifulSoup(browser.page_source, "html.parser")
     if soup.find('div', {'class': 'alert error'}):
@@ -148,8 +148,14 @@ def LinkedInBot(browser):
         while profilesQueued:
 
             shuffle(profilesQueued)
-            profileID = profilesQueued.pop()
-            browser.get('https://www.linkedin.com'+profileID)
+            profileURL = profilesQueued.pop()
+            
+            # Fix the profileURL to ensure it's a valid URL
+            if profileURL.startswith('/'):
+            	fullURL = 'https://www.linkedin.com' + profileURL
+            else:
+            	fullURL = profileURL
+            browser.get(fullURL)
 
             # Connect with users if the flag is turned on and matches your criteria
             if CONNECT_WITH_USERS:
@@ -160,7 +166,7 @@ def LinkedInBot(browser):
 
             # Add the ID to the visitedUsersFile
             with open('visitedUsers.txt', 'a') as visitedUsersFile:
-                visitedUsersFile.write(str(profileID)+'\r\n')
+                visitedUsersFile.write(str(profileURL)+'\r\n')
             visitedUsersFile.close()
 
             # Get new profiles ID
